@@ -9,19 +9,19 @@
     /* Player Colors */
     --player-blue: #4a9eff;
     --player-blue-light: #6ab0ff;
-    --player-blue-spawn: rgba(74, 158, 255, 0.12);
+    --player-blue-spawn: rgba(131, 189, 255, 0.397);
     --player-red: #ff5a5a;
     --player-red-light: #ff7a7a;
-    --player-red-spawn: rgba(255, 90, 90, 0.12);
+    --player-red-spawn: rgba(255, 120, 120, 0.425);
 
     /* Tile Colors */
     --tile-light: #252530;
     --tile-dark: #1c1c25;
 
     /* Highlight Colors */
-    --highlight-move: rgba(80, 200, 120, 0.6);
-    --highlight-attack: rgba(255, 80, 80, 0.6);
-    --highlight-ability: rgba(180, 100, 255, 0.6);
+    --highlight-move: rgba(80, 200, 120, 0.3);
+    --highlight-attack: rgba(255, 80, 80, 0.3);
+    --highlight-ability: rgba(180, 100, 255, 0.3);
     --highlight-selected: rgba(255, 220, 80, 0.7);
 
     /* Mana */
@@ -288,7 +288,7 @@ a {
     display: grid;
     grid-template-columns: repeat(8, var(--tile-size));
     grid-template-rows: repeat(10, var(--tile-size));
-    gap: 1px;
+    gap: 0px;
     border-radius: 4px;
     overflow: hidden;
 }
@@ -327,23 +327,12 @@ a {
     background: rgba(0, 0, 0, 0.3);
 }
 
-/* Spawn zone colors apply over light/dark */
 .tile.blue-spawn {
-    background: var(--player-blue-spawn);
-    border-bottom: 2px solid var(--player-blue);
-}
-
-.tile.blue-spawn.dark {
-    background: rgba(74, 158, 255, 0.08);
+    box-shadow: inset 0 0 0 999px rgba(68, 155, 255, 0.25);
 }
 
 .tile.red-spawn {
-    background: var(--player-red-spawn);
-    border-top: 2px solid var(--player-red);
-}
-
-.tile.red-spawn.dark {
-    background: rgba(255, 90, 90, 0.08);
+    box-shadow: inset 0 0 0 999px rgba(255, 88, 88, 0.25);
 }
 
 .tile:hover {
@@ -351,18 +340,24 @@ a {
 }
 
 /* Tile Highlights */
+.tile.highlight-attack-preview {
+    background-color: rgba(239, 68, 68, 0.15);
+    /* very faint red */
+    border: 3px dashed rgba(239, 68, 68, 0.6);
+}
+
 .tile.highlight-move {
-    background: var(--highlight-move) !important;
+    box-shadow: inset 0 0 0 999px var(--highlight-move) !important;
     animation: pulse-move 2s infinite ease-in-out;
 }
 
 .tile.highlight-attack {
-    background: var(--highlight-attack) !important;
+    box-shadow: inset 0 0 0 999px var(--highlight-attack) !important;
     animation: pulse-attack 1.5s infinite ease-in-out;
 }
 
 .tile.highlight-ability {
-    background: var(--highlight-ability) !important;
+    box-shadow: inset 0 0 0 999px var(--highlight-ability) !important;
     animation: pulse-ability 2s infinite ease-in-out;
 }
 
@@ -965,10 +960,4 @@ a {
 .board-grid-wrapper.flipped .damage-text,
 .board-grid-wrapper.flipped .heal-text {
     transform: translate(-50%, -50%) rotate(180deg);
-}
-
-.tile.highlight-attack-preview {
-    background-color: rgba(239, 68, 68, 0.15);
-    /* very faint red */
-    border: 3px dashed rgba(239, 68, 68, 1);
 }
