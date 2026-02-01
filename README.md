@@ -1,6 +1,7 @@
 # Chegg Game
 
-[Rules](https://docs.google.com/document/d/1TM736HhNsh2nz8l3L-a6PuWAVxbnBSF__NB7qX7Wdlw/edit?tab=t.0)
+[Rules](https://docs.google.com/document/d/1TM736HhNsh2nz8l3L-a6PuWAVxbnBSF__NB7qX7Wdlw/edit?tab=t.0)<br>
+[Video](https://www.youtube.com/watch?v=ciZCvS2PKNA)
 
 ## How to Run
 
