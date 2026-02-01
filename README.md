@@ -13,4 +13,5 @@
 
 Create an issue on this repo with the correct tag thanks.
 
+## Notes
 <small> All credit goes to Gerg for the original design. <br>All image assets are from <a href="https://minecraft-heads.com">minecraft-heads.com</a><br> Also, a good chunk of the UI ***IS*** AI generated. As well as a small amount of logic</small>
