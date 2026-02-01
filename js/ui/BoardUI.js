@@ -143,7 +143,7 @@ export class BoardUI {
             minionEl.classList.add('just-spawned');
         }
 
-        if (minion.hasMoved && minion.id !== 'villager') {
+        if (minion.hasMoved && minion.id !== 'villager' && !minion.hasDashed) {
             minionEl.classList.add('dash-mode');
         }
 

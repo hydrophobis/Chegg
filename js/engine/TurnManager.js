@@ -75,6 +75,7 @@ export class TurnManager {
     canMinionMove(minion) {
         if (!this.canMinionAct(minion)) return false;
         if (minion.hasAttacked) return false;
+        if (minion.hasDashed) return false;
 
         // static units
         const staticMinions = ['cat', 'enderman', 'shulker_box'];
