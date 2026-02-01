@@ -1,0 +1,18 @@
+{
+    "id": "skeleton_king",
+    "name": "Skeleton King",
+    "cost": 5,
+    "description": "Summons skeletons when it attacks. Ranged lateral attack.",
+    "movement": {
+        "pattern": "surrounding",
+        "range": 1
+    },
+    "attack": {
+        "pattern": "lateral",
+        "range": 3
+    },
+    "abilities": [
+        "fireball"
+    ],
+    "abilityCost": 2
+}

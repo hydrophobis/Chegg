@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="CHEGG - A turn-based deck-building strategy game. Build your deck, spawn minions, and defeat your opponent's Villager!">
+
+    <title>CHEGG - Turn-Based Strategy Game</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Game Styles -->
+    <link rel="stylesheet" href="styles/game.css">
+
+    <style>
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .preloader-logo {
+            font-size: 4rem;
+            font-weight: 800;
+            background: #9ca3af;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .preloader-text {
+            color: #9ca3af;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .preloader-spinner {
+            width: 40px;
+            height: 40px;
+            margin-top: 30px;
+            border: 3px solid #374151;
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-logo">CHEGG</div>
+        <div class="preloader-text">Loading game...</div>
+        <div class="preloader-spinner"></div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div class="game-container" id="game-container"></div>
+
+    <!-- Game Script (ES Module) -->
+    <script type="module">
+        import CheggGame from './js/main.js';
+
+        // Hide preloader when game is ready
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 500);
+        });
+    </script>
+
+    <!-- Fallback for browsers without ES modules -->
+    <noscript>
+        <div style="text-align: center; padding: 50px; color: white; background: #0a0a0f; min-height: 100vh;">
+            <h1 style="color: #ef4444;">JavaScript Required</h1>
+            <p style="color: #9ca3af; margin-top: 20px;">
+                CHEGG requires JavaScript to run. Please enable JavaScript in your browser settings.
+            </p>
+        </div>
+    </noscript>
+</body>
+
+</html>

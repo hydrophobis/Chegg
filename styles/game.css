@@ -1,0 +1,974 @@
+/* === CSS Variables === */
+:root {
+    /* Colors */
+    --bg-dark: #0f0f14;
+    --bg-card: #1a1a22;
+    --bg-panel: #16161e;
+    --border-color: #2a2a35;
+
+    /* Player Colors */
+    --player-blue: #4a9eff;
+    --player-blue-light: #6ab0ff;
+    --player-blue-spawn: rgba(74, 158, 255, 0.12);
+    --player-red: #ff5a5a;
+    --player-red-light: #ff7a7a;
+    --player-red-spawn: rgba(255, 90, 90, 0.12);
+
+    /* Tile Colors */
+    --tile-light: #252530;
+    --tile-dark: #1c1c25;
+
+    /* Highlight Colors */
+    --highlight-move: rgba(80, 200, 120, 0.6);
+    --highlight-attack: rgba(255, 80, 80, 0.6);
+    --highlight-ability: rgba(180, 100, 255, 0.6);
+    --highlight-selected: rgba(255, 220, 80, 0.7);
+
+    /* Mana */
+    --mana-color: #7c8aff;
+    --mana-empty: #333340;
+
+    /* Text */
+    --text-primary: #e8e8ec;
+    --text-secondary: #888894;
+    --text-muted: #555560;
+
+    /* Sizing */
+    --tile-size: 60px;
+    --card-width: 80px;
+    --card-height: 75px;
+
+    /* Animation */
+    --transition-fast: 0.1s ease;
+}
+
+/* === Base Styles === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scrollbar-width: none;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg-dark);
+    min-height: 100vh;
+    color: var(--text-primary);
+}
+
+a {
+    color: var(--text-primary);
+}
+
+/* === Game Container === */
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    height: 100%;
+    width: 100%;
+}
+
+/* === Header === */
+.game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 900px;
+    padding: 10px 20px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.game-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 2px;
+}
+
+.turn-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.turn-indicator.blue {
+    background: var(--player-blue-spawn);
+    border: 1px solid var(--player-blue);
+    color: var(--player-blue);
+}
+
+.turn-indicator.red {
+    background: var(--player-red-spawn);
+    border: 1px solid var(--player-red);
+    color: var(--player-red);
+}
+
+.turn-indicator .player-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.turn-indicator.blue .player-dot {
+    background: var(--player-blue);
+}
+
+.turn-indicator.red .player-dot {
+    background: var(--player-red);
+}
+
+.turn-number {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* === Main Game Area === */
+.game-main {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+    flex: 1;
+    min-height: 0;
+}
+
+/* === Player Panels === */
+.player-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 160px;
+    padding: 12px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.player-panel.active {
+    border-color: var(--player-blue);
+}
+
+.player-panel.active.red {
+    border-color: var(--player-red);
+}
+
+.player-name {
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.player-name.blue {
+    color: var(--player-blue);
+}
+
+.player-name.red {
+    color: var(--player-red);
+}
+
+.player-name::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.player-name.blue::before {
+    background: var(--player-blue);
+}
+
+.player-name.red::before {
+    background: var(--player-red);
+}
+
+/* === Mana Bar === */
+.mana-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mana-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mana-display {
+    display: flex;
+    gap: 3px;
+}
+
+.mana-orb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--mana-empty);
+    border: 1px solid #444;
+}
+
+.mana-orb.filled {
+    background: var(--mana-color);
+    border-color: var(--mana-color);
+}
+
+.mana-orb.bonus {
+    background: #a855f7;
+    border-color: #a855f7;
+}
+
+.mana-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--mana-color);
+}
+
+/* === Deck Info === */
+.deck-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+}
+
+.deck-icon {
+    width: 30px;
+    height: 38px;
+    background: #333;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.deck-count {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.deck-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+/* === Board Wrapper === */
+.board-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* === Game Board === */
+.board-container {
+    padding: 8px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, var(--tile-size));
+    grid-template-rows: repeat(10, var(--tile-size));
+    gap: 1px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.tile {
+    width: var(--tile-size);
+    height: var(--tile-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.tile.light {
+    background: var(--tile-light);
+}
+
+.tile.dark {
+    background: var(--tile-dark);
+}
+
+/* Light/Dark indicator dot */
+.tile::before {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.tile.dark::before {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Spawn zone colors apply over light/dark */
+.tile.blue-spawn {
+    background: var(--player-blue-spawn);
+    border-bottom: 2px solid var(--player-blue);
+}
+
+.tile.blue-spawn.dark {
+    background: rgba(74, 158, 255, 0.08);
+}
+
+.tile.red-spawn {
+    background: var(--player-red-spawn);
+    border-top: 2px solid var(--player-red);
+}
+
+.tile.red-spawn.dark {
+    background: rgba(255, 90, 90, 0.08);
+}
+
+.tile:hover {
+    filter: brightness(1.1);
+}
+
+/* Tile Highlights */
+.tile.highlight-move {
+    background: var(--highlight-move) !important;
+    animation: pulse-move 2s infinite ease-in-out;
+}
+
+.tile.highlight-attack {
+    background: var(--highlight-attack) !important;
+    animation: pulse-attack 1.5s infinite ease-in-out;
+}
+
+.tile.highlight-ability {
+    background: var(--highlight-ability) !important;
+    animation: pulse-ability 2s infinite ease-in-out;
+}
+
+.tile.highlight-selected {
+    outline: 3px solid var(--highlight-selected);
+    outline-offset: -3px;
+    z-index: 10;
+}
+
+@keyframes pulse-move {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 0.9;
+    }
+}
+
+@keyframes pulse-attack {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse-ability {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+        filter: hue-rotate(20deg);
+    }
+}
+
+/* === Minion Display === */
+.minion {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+}
+
+.minion.blue {
+    border-color: var(--player-blue);
+    box-shadow: 0 0 10px rgba(74, 158, 255, 0.2);
+}
+
+.minion.red {
+    border-color: var(--player-red);
+    box-shadow: 0 0 10px rgba(255, 90, 90, 0.2);
+}
+
+.minion-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    z-index: 1;
+}
+
+.minion-content img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+
+
+
+
+.minion:hover .minion-name-tag {
+    opacity: 1;
+}
+
+.minion.can-act {
+    animation: active-glow 2s infinite;
+}
+
+@keyframes active-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+    }
+
+    50% {
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+    }
+}
+
+.minion img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.minion-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.minion.can-act::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 6px;
+    height: 6px;
+    background: #22c55e;
+    border-radius: 50%;
+}
+
+.minion.just-spawned::after {
+    background: #fbbf24;
+}
+
+.minion:hover {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+/* Villager Crown */
+.minion.villager::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    font-size: 12px;
+}
+
+/* === Hand Area === */
+.hand-section {
+    width: 100%;
+}
+
+.hand-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.hand {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-height: 110px;
+    max-height: 120px;
+    overflow-y: hidden;
+    padding: 8px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+.card {
+    width: var(--card-width);
+    height: var(--card-height);
+    border-radius: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.card:hover {
+    border-color: var(--mana-color);
+}
+
+.card.selected {
+    border-color: var(--highlight-selected);
+    background: rgba(255, 220, 80, 0.1);
+}
+
+.card.cannot-afford {
+    opacity: 0.4;
+}
+
+.card-image {
+    width: 45px;
+    height: 45px;
+    border-radius: 4px;
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    overflow: hidden;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-name {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+
+.card-cost {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--mana-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+}
+
+/* === Action Buttons === */
+.action-bar {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.action-btn.primary {
+    background: var(--mana-color);
+    color: white;
+}
+
+.action-btn.primary:hover {
+    background: #8b9aff;
+}
+
+.action-btn.secondary {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.action-btn.secondary:hover {
+    background: #252530;
+}
+
+.action-btn.danger {
+    background: var(--player-red);
+    color: white;
+}
+
+.action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* === Modal Overlay === */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 800px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.modal-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+/* === Deck Builder === */
+.deck-builder {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4px;
+}
+
+.minion-pool {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 8px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+}
+
+.deck-preview {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.deck-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.deck-slot {
+    width: 42px;
+    height: 42px;
+    border-radius: 4px;
+    background: var(--bg-dark);
+    border: 1px dashed var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+}
+
+.deck-slot.filled {
+    border-style: solid;
+    border-color: var(--mana-color);
+}
+
+.deck-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* === Game Over Screen === */
+.game-over {
+    text-align: center;
+}
+
+.game-over-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.game-over-title.blue {
+    color: var(--player-blue);
+}
+
+.game-over-title.red {
+    color: var(--player-red);
+}
+
+.game-over-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+/* === Tooltip === */
+.tooltip {
+    position: absolute;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px 12px;
+    z-index: 200;
+    pointer-events: none;
+    max-width: 220px;
+}
+
+.tooltip-title {
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.tooltip-cost {
+    color: var(--mana-color);
+    font-size: 0.8rem;
+}
+
+.tooltip-description {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+/* === Animations === */
+@keyframes spawn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.minion-spawn {
+    animation: spawn 0.2s ease-out;
+}
+
+@keyframes attack {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.minion-attack {
+    animation: attack 0.15s ease-out;
+}
+
+@keyframes death {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+.minion-death {
+    animation: death 0.2s ease-out forwards;
+}
+
+/* === Responsive === */
+@media (max-width: 1100px) {
+    :root {
+        --tile-size: 50px;
+    }
+
+    .player-panel {
+        width: 140px;
+    }
+}
+
+@media (max-width: 850px) {
+    .game-main {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .player-panel {
+        width: 100%;
+        max-width: 350px;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+
+/* Dash Indicator */
+.minion.dash-mode::before {
+    content: '';
+    /* must be set for pseudo-element to appear */
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    background-color: #fbbf24;
+    /* optional background */
+    background-image: url('../assets/lightning.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    border: 2px solid var(--bg-panel);
+    z-index: 20;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure villager crown and dash indicator don't overlap awkwardly */
+.minion.villager::before {
+    left: 50%;
+    transform: translateX(-50%);
+    top: -10px;
+    right: auto;
+}
+
+/* Grid Labels */
+.board-grid-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.board-labels-top {
+    display: grid;
+    grid-template-columns: 20px repeat(8, var(--tile-size));
+    /* 20px offset for row labels */
+    gap: 1px;
+    padding-left: 1px;
+    /* adjust alignment */
+}
+
+.board-center-section {
+    display: flex;
+    gap: 4px;
+}
+
+.board-labels-left {
+    display: grid;
+    grid-template-rows: repeat(10, var(--tile-size));
+    gap: 1px;
+    width: 20px;
+    padding-top: 1px;
+}
+
+.label-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Board Flipping */
+.board-grid-wrapper.flipped {
+    transform: rotate(180deg);
+}
+
+.board-grid-wrapper.flipped .minion {
+    transform: rotate(180deg);
+}
+
+.board-grid-wrapper.flipped .label-cell {
+    transform: rotate(180deg);
+}
+
+/* Fix particle effects if any */
+.board-grid-wrapper.flipped .damage-text,
+.board-grid-wrapper.flipped .heal-text {
+    transform: translate(-50%, -50%) rotate(180deg);
+}
+
+.tile.highlight-attack-preview {
+    background-color: rgba(239, 68, 68, 0.15);
+    /* very faint red */
+    border: 3px dashed rgba(239, 68, 68, 1);
+}

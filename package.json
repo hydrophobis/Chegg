@@ -1,0 +1,13 @@
+{
+    "name": "chegg",
+    "version": "1.0.0",
+    "description": "A turn-based deck-building strategy game",
+    "main": "index.html",
+    "scripts": {
+        "start": "npx serve .",
+        "dev": "npx serve . -l 3000"
+    },
+    "keywords": ["game", "strategy", "deck-building", "turn-based"],
+    "author": "Original design by Gerg",
+    "license": "MIT"
+}
