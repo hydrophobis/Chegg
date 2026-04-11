@@ -14,7 +14,7 @@ export class NetworkClient {
     connect() {
         if (this.socket && this.socket.readyState <= 1) return;
 
-        let ip = "slideshow-word-brilliant-boutique.trycloudflare.com";
+        let ip = "voluntary-entrepreneurs-stolen-stores.trycloudflare.com";
         const port = 80;
 
         // Use the current host but change protocol to ws://
