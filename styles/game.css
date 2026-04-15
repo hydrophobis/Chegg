@@ -239,6 +239,7 @@ a:hover {
     font-size: 1.1rem !important;
     padding-bottom: 16px !important;
     min-width: 140px;
+    max-width: 200px;
     z-index: 50;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
@@ -1413,12 +1414,229 @@ a:hover {
 }
 
 @media (max-width: 400px) {
-    :root { --tile-size: 34px; }
+    :root { --tile-size: 32px; }
     .game-title { font-size: 1rem; }
     .turn-indicator { padding: 6px 12px; font-size: 0.7rem; }
-    .card { width: 60px; height: 75px; }
-    .card-image { width: 38px; height: 38px; }
-    .card-name { font-size: 0.55rem; }
+    .card { width: 56px; height: 72px; }
+    .card-image { width: 36px; height: 36px; }
+    .card-name { font-size: 0.5rem; }
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 500px) {
+    /* Make board scrollable horizontally on very small screens */
+    .board-wrapper {
+        overflow-x: auto;
+        overflow-y: auto;
+        max-width: 100vw;
+        justify-content: flex-start;
+        padding: 0 4px;
+    }
+    
+    .board-container {
+        flex-shrink: 0;
+    }
+    
+    /* Move End Turn button to avoid overlap */
+    #btn-end-turn {
+        bottom: 16px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: 180px;
+        padding: 10px 20px !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Adjust hand for small screens */
+    .hand {
+        min-height: 80px;
+        max-height: 100px;
+    }
+    
+    .hand-section {
+        max-width: 100%;
+        padding: 0 4px;
+    }
+    
+    /* Reduce header padding */
+    .game-header {
+        padding: 8px !important;
+        gap: 6px;
+    }
+    
+    .game-container {
+        padding: 4px !important;
+        gap: 4px !important;
+    }
+    
+    /* Make player panels more compact */
+    .player-panel {
+        padding: 8px !important;
+        gap: 6px !important;
+    }
+    
+    .mana-orb {
+        width: 16px !important;
+        height: 16px !important;
+    }
+    
+    .deck-icon {
+        width: 24px !important;
+        height: 30px !important;
+    }
+    
+    /* Adjust action bar */
+    .action-bar {
+        padding: 0 4px;
+        gap: 4px;
+    }
+    
+    .action-btn {
+        padding: 8px 10px !important;
+        font-size: 0.7rem !important;
+        min-width: 70px;
+    }
+    
+    /* Hide grid labels on very small screens to save space */
+    .board-labels-top,
+    .board-labels-left {
+        display: none;
+    }
+    
+    .board-center-section {
+        gap: 2px;
+    }
+    
+    .board-labels-top {
+        grid-template-columns: 0 repeat(8, var(--tile-size));
+    }
+    
+    .board-labels-left {
+        width: 0;
+    }
+}
+
+/* iPhone notch / Dynamic Island safe area */
+@supports (padding: env(safe-area-inset-bottom)) {
+    .game-container {
+        padding-bottom: calc(4px + env(safe-area-inset-bottom)) !important;
+    }
+    
+    #btn-end-turn {
+        bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+    }
+    
+    .modal-overlay {
+        padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+}
+
+/* Landscape mobile optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+    .game-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-content: flex-start;
+    }
+    
+    .game-header {
+        width: 100%;
+        order: 1;
+        padding: 4px 8px !important;
+    }
+    
+    .game-title {
+        font-size: 0.9rem !important;
+    }
+    
+    .player-panel {
+        width: 120px !important;
+        order: 2;
+        flex-direction: column;
+        gap: 4px;
+        padding: 6px !important;
+    }
+    
+    .board-wrapper {
+        order: 3;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .hand-section {
+        width: 100%;
+        order: 4;
+        max-height: 80px;
+    }
+    
+    .hand {
+        min-height: 60px;
+        max-height: 70px;
+    }
+    
+    #btn-end-turn {
+        position: fixed;
+        bottom: 8px;
+        right: 8px;
+        padding: 6px 12px !important;
+        font-size: 0.8rem !important;
+        min-width: 80px;
+    }
+}
+
+/* Mobile sandbox panel */
+@media (max-width: 500px) {
+    #sandbox-panel {
+        position: fixed !important;
+        left: 10px !important;
+        right: 10px !important;
+        top: auto !important;
+        bottom: 10px !important;
+        width: auto !important;
+        max-height: 40vh !important;
+        z-index: 200 !important;
+    }
+    
+    #sandbox-panel .modal-title {
+        font-size: 1rem !important;
+    }
+    
+    #minion-list {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px !important;
+    }
+    
+    #minion-list .action-btn {
+        min-height: 50px !important;
+        padding: 6px !important;
+    }
+    
+    #minion-list img {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    
+    #minion-list div:last-child {
+        font-size: 0.5rem !important;
+    }
+}
+
+/* Prevent pull-to-refresh on mobile */
+html, body {
+    overscroll-behavior: none;
+    touch-action: manipulation;
+}
+
+/* Improve touch scrolling */
+.hand {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.hand::-webkit-scrollbar {
+    display: none;
 }
 
 /* Touch device optimizations */

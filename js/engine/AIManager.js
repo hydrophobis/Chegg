@@ -1,7 +1,8 @@
 import { Board } from './Board.js';
 import { TurnManager } from './TurnManager.js';
 import { ManaSystem } from './ManaSystem.js';
-// lets see them beat this i dnt care making it close to 1000 lines 
+
+// lets see them beat this i dnt care making it close to 1000 lines
 export class AIManager {
     static DIFFICULTY_PRESETS = {
         cautious: {
@@ -234,7 +235,8 @@ export class AIManager {
         const myMinions = state.getPlayerMinions(forColor);
         const tm = new TurnManager(state);
 
-        const affordableHandCards = player.hand
+        const affordableHandCards = player
+            .hand
             .map((card, idx) => ({ card, idx }))
             .filter(item => ManaSystem.canAfford(player, item.card.cost));
 

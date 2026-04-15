@@ -41,7 +41,7 @@ const BUILT_IN_MINIONS = {
         id: 'rabbit',
         name: 'Rabbit',
         cost: 2,
-        movement: { pattern: 'lateral', range: 2 },
+        movement: { pattern: 'lateral', range: 2, exactRange: true },
         canJump: true,
         cannotAttack: true,
         abilities: ['drawOnJumpOver'],
@@ -117,21 +117,26 @@ const BUILT_IN_MINIONS = {
         id: 'slime',
         name: 'Slime',
         cost: 4,
-        movement: { pattern: 'surrounding', range: 2 },
-        attack: { pattern: 'surrounding', range: 2 },
+        movement: [
+            { pattern: 'diagonal', range: 2, exactRange: true },
+            { pattern: 'lateral', range: 2, exactRange: true }
+        ],
+        attack: [
+            { pattern: 'diagonal', range: 2, exactRange: true },
+            { pattern: 'lateral', range: 2, exactRange: true }
+        ],
         canJump: true,
         movesToAttack: true,
-        description: 'Jumps up to 2 tiles. Attack by moving onto enemies.'
+        description: 'Jumps exactly 2 tiles (corners and edges). Attack by moving onto enemies.'
     },
     shulker_box: {
         id: 'shulker_box',
         name: 'Shulker Box',
         cost: 4,
-        movement: { pattern: 'none', range: 0 },
-        cannotMove: true,
-        attack: { pattern: 'surrounding', range: 4 },
+        movement: { pattern: 'knight-path', range: 1 },
+        attack: { pattern: 'knight-path', range: 1 },
         movesToAttack: true,
-        description: 'Cannot move freely. Ranged attack, moves to target position.'
+        description: 'Moves along knight L-path but cannot pass through pieces.'
     },
     parrot: {
         id: 'parrot',
@@ -351,10 +356,22 @@ export class MinionLoader {
         const config = this.getConfig(minion.id);
         if (!config || !config.attack) return [];
 
-        const { pattern, range } = config.attack;
+        const attacks = Array.isArray(config.attack) ? config.attack : [config.attack];
+        const allPositions = [];
 
-        // Simple redir to Board.getAOEPositions which handles geometry
-        return Board.getAOEPositions(minion.position.row, minion.position.col, pattern, range);
+        for (const attackConfig of attacks) {
+            const { pattern, range, exactRange } = attackConfig;
+            const positions = Board.getAOEPositions(
+                minion.position.row, 
+                minion.position.col, 
+                pattern, 
+                range,
+                { exactRange: exactRange || false }
+            );
+            allPositions.push(...positions);
+        }
+
+        return allPositions;
     }
 }
 

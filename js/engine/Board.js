@@ -8,16 +8,16 @@ export class Board {
 
     static DIRECTIONS = {
         lateral: [
-            { row: -1, col: 0 },  // up
-            { row: 1, col: 0 },   // down
-            { row: 0, col: -1 },  // left
-            { row: 0, col: 1 }    // right
+            { row: -1, col: 0 },
+            { row: 1, col: 0 },
+            { row: 0, col: -1 },
+            { row: 0, col: 1 }
         ],
         diagonal: [
-            { row: -1, col: -1 }, // up-left
-            { row: -1, col: 1 },  // up-right
-            { row: 1, col: -1 },  // down-left
-            { row: 1, col: 1 }    // down-right
+            { row: -1, col: -1 },
+            { row: -1, col: 1 },
+            { row: 1, col: -1 },
+            { row: 1, col: 1 }
         ],
         surrounding: [
             { row: -1, col: 0 }, { row: 1, col: 0 },
@@ -30,6 +30,16 @@ export class Board {
             { row: 2, col: -1 }, { row: 2, col: 1 },
             { row: -1, col: -2 }, { row: -1, col: 2 },
             { row: 1, col: -2 }, { row: 1, col: 2 }
+        ],
+        'knight-path': [
+            { row: -2, col: -1, path: [{row: -1, col: 0}, {row: -2, col: 0}, {row: -2, col: -1}] },
+            { row: -2, col: 1, path: [{row: -1, col: 0}, {row: -2, col: 0}, {row: -2, col: 1}] },
+            { row: 2, col: -1, path: [{row: 1, col: 0}, {row: 2, col: 0}, {row: 2, col: -1}] },
+            { row: 2, col: 1, path: [{row: 1, col: 0}, {row: 2, col: 0}, {row: 2, col: 1}] },
+            { row: -1, col: -2, path: [{row: 0, col: -1}, {row: 0, col: -2}, {row: -1, col: -2}] },
+            { row: -1, col: 2, path: [{row: 0, col: 1}, {row: 0, col: 2}, {row: -1, col: 2}] },
+            { row: 1, col: -2, path: [{row: 0, col: -1}, {row: 0, col: -2}, {row: 1, col: -2}] },
+            { row: 1, col: 2, path: [{row: 0, col: 1}, {row: 0, col: 2}, {row: 1, col: 2}] }
         ],
         'forward-blue': [
             { row: 1, col: -1 },
@@ -65,11 +75,62 @@ export class Board {
             canJump = false,
             mustBeEmpty = true,
             onlyDarkTiles = false,
-            blockByObstacle = true
+            blockByObstacle = true,
+            exactRange = false
         } = options;
 
+        if (pattern === 'knight-path') {
+            for (const dir of directions) {
+                let blocked = false;
+                
+                if (dir.path) {
+                    // Check each step in the path (including final destination)
+                    for (let i = 0; i < dir.path.length; i++) {
+                        const step = dir.path[i];
+                        const checkRow = startRow + step.row;
+                        const checkCol = startCol + step.col;
+                        
+                        if (!this.isValidPosition(checkRow, checkCol)) {
+                            blocked = true;
+                            break;
+                        }
+                        
+                        const minion = gameState.getMinionAt(checkRow, checkCol);
+                        
+                        // If this is the last step (final destination)
+                        const isFinalStep = (i === dir.path.length - 1);
+                        
+                        if (minion) {
+                            if (isFinalStep && mustBeEmpty) {
+                                // Final destination must be empty for movement
+                                blocked = true;
+                            } else if (!isFinalStep) {
+                                // Intermediate steps must always be empty
+                                blocked = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+                
+                if (!blocked) {
+                    const finalRow = startRow + dir.row;
+                    const finalCol = startCol + dir.col;
+                    
+                    if (this.isValidPosition(finalRow, finalCol)) {
+                        if (onlyDarkTiles && !gameState.board[finalRow][finalCol].isDark) continue;
+                        positions.push({ row: finalRow, col: finalCol });
+                    }
+                }
+            }
+            return positions;
+        }
+
         for (const dir of directions) {
-            for (let dist = 1; dist <= range; dist++) {
+            const startDist = exactRange ? range : 1;
+            const endDist = range;
+            
+            for (let dist = startDist; dist <= endDist; dist++) {
                 const row = startRow + dir.row * dist;
                 const col = startCol + dir.col * dist;
 
@@ -78,7 +139,6 @@ export class Board {
 
                 const minion = gameState.getMinionAt(row, col);
 
-                // path blocked (unless jumping)
                 if (!canJump && blockByObstacle && minion && dist < range) {
                     break;
                 }
@@ -90,7 +150,6 @@ export class Board {
 
                 positions.push({ row, col });
 
-                // blocked
                 if (!canJump && minion) break;
             }
         }
@@ -106,13 +165,61 @@ export class Board {
             aoe = false,
             directional = false,
             requiresLoS = true,
-            onlyDarkTiles = false
+            onlyDarkTiles = false,
+            exactRange = false
         } = options;
+
+        if (pattern === 'knight-path') {
+            for (const dir of directions) {
+                if (dir.path) {
+                    // Check each step along the path
+                    for (const step of dir.path) {
+                        const checkRow = startRow + step.row;
+                        const checkCol = startCol + step.col;
+                        
+                        if (!this.isValidPosition(checkRow, checkCol)) {
+                            break; // Path goes off board, stop checking this direction
+                        }
+                        
+                        const minion = gameState.getMinionAt(checkRow, checkCol);
+                        if (minion) {
+                            // Found a minion along the path
+                            if (minion.owner !== owner) {
+                                // It's an enemy, can attack it
+                                targets.push({ row: checkRow, col: checkCol, minion });
+                            }
+                            // Path is blocked (by friend or foe), stop checking this direction
+                            break;
+                        }
+                    }
+                }
+                
+                // Also check the final destination (if path wasn't blocked)
+                const finalRow = startRow + dir.row;
+                const finalCol = startCol + dir.col;
+                
+                if (this.isValidPosition(finalRow, finalCol)) {
+                    if (onlyDarkTiles && !gameState.board[finalRow][finalCol].isDark) continue;
+                    
+                    // Check if we already added this position (from path checking)
+                    const alreadyAdded = targets.some(t => t.row === finalRow && t.col === finalCol);
+                    if (!alreadyAdded) {
+                        const finalMinion = gameState.getMinionAt(finalRow, finalCol);
+                        if (finalMinion && finalMinion.owner !== owner) {
+                            targets.push({ row: finalRow, col: finalCol, minion: finalMinion });
+                        }
+                    }
+                }
+            }
+            return targets;
+        }
 
         for (const dir of directions) {
             const dirTargets = [];
+            const startDist = exactRange ? range : 1;
+            const endDist = range;
 
-            for (let dist = 1; dist <= range; dist++) {
+            for (let dist = startDist; dist <= endDist; dist++) {
                 const row = startRow + dir.row * dist;
                 const col = startCol + dir.col * dist;
 
@@ -121,8 +228,8 @@ export class Board {
 
                 const minion = gameState.getMinionAt(row, col);
 
-                // sight blocked
-                if (requiresLoS && minion && dist < range) {
+                // For exactRange attacks, skip line of sight checks
+                if (!exactRange && requiresLoS && minion && dist < range) {
                     if (minion.owner !== owner) {
                         dirTargets.push({ row, col, minion });
                     }
@@ -144,12 +251,42 @@ export class Board {
         return targets;
     }
 
-    static getAOEPositions(centerRow, centerCol, pattern = 'surrounding', range = 1) {
+    static getAOEPositions(centerRow, centerCol, pattern = 'surrounding', range = 1, options = {}) {
         const positions = [];
         const directions = this.DIRECTIONS[pattern] || this.DIRECTIONS.surrounding;
+        const { exactRange = false } = options;
+
+        // Special handling for knight-path pattern - show all squares along the path
+        if (pattern === 'knight-path') {
+            for (const dir of directions) {
+                if (dir.path) {
+                    // Add all squares along the path
+                    for (const step of dir.path) {
+                        const row = centerRow + step.row;
+                        const col = centerCol + step.col;
+                        
+                        if (this.isValidPosition(row, col)) {
+                            positions.push({ row, col });
+                        }
+                    }
+                }
+                
+                // Also add the final destination
+                const finalRow = centerRow + dir.row;
+                const finalCol = centerCol + dir.col;
+                
+                if (this.isValidPosition(finalRow, finalCol)) {
+                    positions.push({ row: finalRow, col: finalCol });
+                }
+            }
+            return positions;
+        }
 
         for (const dir of directions) {
-            for (let dist = 1; dist <= range; dist++) {
+            const startDist = exactRange ? range : 1;
+            const endDist = range;
+            
+            for (let dist = startDist; dist <= endDist; dist++) {
                 const row = centerRow + dir.row * dist;
                 const col = centerCol + dir.col * dist;
 

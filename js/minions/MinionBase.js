@@ -42,12 +42,9 @@ export class MinionBase {
         const movements = Array.isArray(this.movement) ? this.movement : [this.movement];
         const allMoves = [];
 
-        // console.log(`[MinionBase] Getting moves for ${this.id} at ${row},${col}`, movements);
-
         for (const moveConfig of movements) {
-            let { pattern, range } = moveConfig;
+            let { pattern, range, exactRange } = moveConfig;
 
-            // Handle owner-specific patterns (like forward for Zombie)
             if (pattern === 'forward') {
                 pattern = `forward-${this.owner}`;
             }
@@ -61,13 +58,12 @@ export class MinionBase {
                 {
                     canJump: this.canJump,
                     mustBeEmpty: true,
-                    onlyDarkTiles: this.onlyDarkTiles
+                    onlyDarkTiles: this.onlyDarkTiles,
+                    exactRange: exactRange || false
                 }
             );
             allMoves.push(...moves);
         }
-
-        // console.log(`[MinionBase] Total moves:`, allMoves);
 
         return allMoves;
     }
@@ -77,20 +73,29 @@ export class MinionBase {
         if (!this.position) return [];
 
         const { row, col } = this.position;
-        const { pattern, range } = this.attack;
+        const attacks = Array.isArray(this.attack) ? this.attack : [this.attack];
+        const allAttacks = [];
 
-        return Board.getValidAttacks(
-            gameState,
-            row,
-            col,
-            pattern,
-            range,
-            this.owner,
-            {
-                onlyDarkTiles: this.onlyDarkTiles,
-                aoe: this.attack.aoe || false
-            }
-        );
+        for (const attackConfig of attacks) {
+            const { pattern, range, exactRange } = attackConfig;
+
+            const targets = Board.getValidAttacks(
+                gameState,
+                row,
+                col,
+                pattern,
+                range,
+                this.owner,
+                {
+                    onlyDarkTiles: this.onlyDarkTiles,
+                    aoe: attackConfig.aoe || false,
+                    exactRange: exactRange || false
+                }
+            );
+            allAttacks.push(...targets);
+        }
+
+        return allAttacks;
     }
 
     move(gameState, toRow, toCol) {
