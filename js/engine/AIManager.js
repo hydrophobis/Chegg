@@ -1,7 +1,7 @@
 import { Board } from './Board.js';
 import { TurnManager } from './TurnManager.js';
 import { ManaSystem } from './ManaSystem.js';
-// lest see them beat this i dnt care making it close to 1000 lines 
+// lets see them beat this i dnt care making it close to 1000 lines 
 export class AIManager {
     static DIFFICULTY_PRESETS = {
         cautious: {
